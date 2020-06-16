@@ -25,7 +25,7 @@ def main():
     name = message.from_user.first_name
     second_name = message.from_user.second_name
 
-    if db_agent.CheckIfKnown(chat_id):  # Think over situations, when we found more than 2 (guess it means that user changed login)
+    if db_agent.CheckIfKnown(chat_id):
       bot.send_message("Hello, (0), ".format(name + ' ' + second_name) +
                        "you can get address writing /get.")
     else:
