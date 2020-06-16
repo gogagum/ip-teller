@@ -3,13 +3,13 @@ from datetime import datetime
 
 class DBAgent:
 
-  def init(self):
+  def init(self, db_path = '../db/'):
     '''Class constructor'''
-    pass
+    self.db_path = db_path
 
   def CheckIfKnown(self, user):
     '''Checks if id is added to db.'''
-    with sqlite3.connect('users.sqlite') as conn:
+    with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       found_by_id = cursor.execute(
         'select ID'+
@@ -25,7 +25,7 @@ class DBAgent:
 
   def AddToUnknown(self, user):
     '''Adds unknown user to unknown users list(DB).'''
-    with sqlite3.connect('users.sqlite') as conn:
+    with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
         'insert into table USERS_DB.UNKNOWN_USERS'+
@@ -36,7 +36,7 @@ class DBAgent:
 
   def AddToKnown(self, user):
     '''Adds user to known users list(DB).'''
-    with sqlite3.connect('users.sqlite') as conn:
+    with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
         'insert into table USERS_DB.KNOWN_USERS'+

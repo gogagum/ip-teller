@@ -1,6 +1,3 @@
-from passwd_manager import PasswdManager
-
-
 class PasswdManager:
   def init(self):
     '''Class constructor.'''
