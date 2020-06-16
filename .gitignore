@@ -1,1 +1,3 @@
 ./src/key.txt
+./db/known_users.sqlite
+./db/strangers.sqlite
