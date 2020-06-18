@@ -1,4 +1,8 @@
 from password_generator import PasswordGenerator
+from threading import Thread
+import logging
+
+from time import sleep
 
 
 class PasswdManager:
@@ -6,7 +10,14 @@ class PasswdManager:
   def __init__(self):
     '''Class constructor.'''
     self.passwd_len = 10
-    passwd_generator = PasswordGenerator()
+    self.passwd_generator = PasswordGenerator()
+    self.passwd_generator.minlen=self.passwd_len
+    self.passwd_generator.maxlen=self.passwd_len
+    self.updater_thread = Thread(name='updater_thread',
+                                 target=self._UpdaterThread,
+                                 daemon=True)
+    self.updater_thread.start()
+    logging.debug('PasswdManager.__init__() finishes')
 
 
   def GetCurrPasswd(self):
@@ -18,5 +29,12 @@ class PasswdManager:
   def RefreshPasswd(self):
     '''Refreshes password.'''
     with open("passwd.txt", "w") as passwd_file:
-      passwd_file.write(passwd_generator.generate(minlen=self.passwd_len,
-                                                  maxlen=self.passwd_len))
+      passwd_file.write(self.passwd_generator.generate())
+    logging.debug('PasswdManager.RefreshPasswd() finishes')
+
+
+  def _UpdaterThread(self):
+    '''Thread function'''
+    while True:
+      self.RefreshPasswd()
+      sleep(3600)

@@ -1,3 +1,5 @@
+import logging
+
 from telebot import TeleBot
 from telebot import apihelper
 
@@ -15,10 +17,18 @@ def GetToken():
 def main():
   '''Func with main actions.'''
   # Objects used later.
+
+  # TODO: My log messages and all other logged info should be separated.
+  logging.basicConfig(filename='../log/debug.log',
+                      level=logging.DEBUG,
+                      format='%(asctime)s %(message)s',
+                      datefmt='%m/%d/%Y %I:%M:%S %p')
+
   apihelper.proxy = {'https':'socks5://188.226.207.248:5555'}
   passwd_manager = PasswdManager()
   bot = TeleBot(GetToken())
   db_agent = DBAgent();
+
 
 
   @bot.message_handler(commands=['start'])
@@ -42,7 +52,7 @@ def main():
     if (db_agent.CheckIfKnown(user)):
       pass
     else:
-      bot.send_message(chat_id=message.chat_id,
+      bot.send_message(chat_id=message.chat.id,
                        text="I won't let you in my refregirator, "+
                             "if you have no password.")
 
@@ -54,21 +64,28 @@ def main():
     if (db_agent.CheckIfKnown(user)):
       pass
     else:
-      bot.send_message(chat_id=message.chat_id,
+      bot.send_message(chat_id=message.chat.id,
                        text="I don't unsedstand.")
 
 
-  @bot.message_handler(func=lambda message: True, content_types=['text'])
-  def Login(message):
-    '''Gives login to new user who got password.'''
-    if (message.text == PasswdManager.GetCurrPasswd()):
+  def CheckPasswd(message):
+    '''Checks password from message.'''
+    if (message.text == passwd_manager.GetCurrPasswd()):
       db_agent.AddToKnown(0)
     else:
-      bot.send_message(chat_id=message.chat_id,
+      bot.send_message(chat_id=message.chat.id,
                        text="Are you hungri?")
 
 
-  bot.polling()
+  @bot.message_handler(commands=['register'])
+  def Login(message):
+    '''Gives login to new user who got password.'''
+    msg = bot.send_message(chat_id=message.chat.id,
+                           text="Print password, if you know it.")
+    bot.register_next_step_handler(msg, CheckPasswd)
+
+
+  bot.polling(timeout=200)
 
 if __name__ == "__main__":
   main()
