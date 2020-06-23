@@ -1,4 +1,5 @@
 import logging
+import socket
 
 from telebot import TeleBot
 from telebot import apihelper
@@ -17,18 +18,17 @@ def GetToken():
 def main():
   '''Func with main actions.'''
   # Objects used later.
-
-  # TODO: My log messages and all other logged info should be separated.
   logging.basicConfig(filename='../log/debug.log',
                       level=logging.DEBUG,
                       format='%(asctime)s %(message)s',
                       datefmt='%m/%d/%Y %I:%M:%S %p')
+  logging.debug('main started')
+  # apihelper.proxy = {'https':'socks5://188.226.207.248:5555'}
 
-  apihelper.proxy = {'https':'socks5://188.226.207.248:5555'}
+  # TODO: My log messages and all other logged info should be separated.
   passwd_manager = PasswdManager()
   bot = TeleBot(GetToken())
   db_agent = DBAgent();
-
 
 
   @bot.message_handler(commands=['start'])
@@ -50,7 +50,8 @@ def main():
     '''Prints help information.'''
     user = BotUser(message.from_user)
     if (db_agent.CheckIfKnown(user)):
-      pass
+      bot.send_message(chat_id=message.chat.id,
+                       text="Print /get to get ip address.")
     else:
       bot.send_message(chat_id=message.chat.id,
                        text="I won't let you in my refregirator, "+
@@ -62,16 +63,20 @@ def main():
     '''Answers to users query.'''
     user = BotUser(message.from_user)
     if (db_agent.CheckIfKnown(user)):
-      pass
+      bot.send_message(chat_id=message.chat.id,
+                       text=str(socket.gethostbyname(socket.gethostname())))
     else:
       bot.send_message(chat_id=message.chat.id,
                        text="I don't unsedstand.")
 
 
-  def CheckPasswd(message):
+  def _CheckPasswd(message):
     '''Checks password from message.'''
+    user = BotUser(message.from_user)
     if (message.text == passwd_manager.GetCurrPasswd()):
-      db_agent.AddToKnown(0)
+      db_agent.AddToKnown(user)
+      bot.send_message(chat_id=message.chat.id,
+                       text="Welcome, {0}".format(user.NameToCall()))
     else:
       bot.send_message(chat_id=message.chat.id,
                        text="Are you hungri?")
@@ -82,7 +87,7 @@ def main():
     '''Gives login to new user who got password.'''
     msg = bot.send_message(chat_id=message.chat.id,
                            text="Print password, if you know it.")
-    bot.register_next_step_handler(msg, CheckPasswd)
+    bot.register_next_step_handler(msg, _CheckPasswd)
 
 
   bot.polling(timeout=200)

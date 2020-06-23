@@ -1,50 +1,65 @@
-import sqlite3  # For the first time, or it will be enough.
+import sqlite3
+import logging
+
 from datetime import datetime
 
 class DBAgent:
 
-  def __init__(self, db_path = '../db/'):
+  def __init__(self):
     '''Class constructor'''
-    self.db_path = db_path
+    self.db_path = '../db/'
 
 
-  def CheckTableExistance(self, table_name):
-    '''Checks if table with name <table name> exists.'''
+  def CheckExistance(self):
+    '''Checks if table exists.'''
+    logging.debug("DBAgent.CheckExistance()")
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
-      cursor.execute('SELECT count(name) '+
+      cursor.execute('SELECT * '+
                      'FROM sqlite_master '+
-                     '''WHERE type='table' AND name=(0)'''.format(table_name))
-      return cursor.fetchone()[0]==1
+                     "WHERE type='table' AND name='USERS';")
+      row = cursor.fetchone()
+      return row != None
 
 
   def CheckIfKnown(self, user):
-    '''Checks if id is added to db.'''
-    if not self.CheckTableExistance('USERS.KNOWN_USERS'):
+    '''Checks if id is added to USERS.KNOWN.'''
+    if not self.CheckExistance():
+      self._CreateAllDb()
+      self.AddToUnknown(user)
       return False
+    # Check if known
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       found_by_id = cursor.execute(
-        'select ID '+
-        'from USERS_DB.KNOWN_USERS '
-        'where ID == (0)'.format(user.id)
+        'SELECT id ' +
+        'FROM users ' +
+        'WHERE users.user_id={0} AND users.known=TRUE;'.format(user.id)
+      )
+      # Update name & login
+      cursor.execute(
+        'UPDATE USERS ' +
+        "SET users.first_name  = '{0}', ".format(user.first_name) +
+        "    users.second_name = '{0}', ".format(user.second_name) +
+        "    users.login       = '{0}', ".format(user.login) +
+        "WHERE users.user_id=(0);".format(user.id)
       )
     if len(found_by_id) == 0:
+      AddToUnknown(user)
       return False
-    if found_by_id.login != user.login:
-      pass  # TODO change login in db
-
+    return True
 
   def AddToUnknown(self, user):
     '''Adds unknown user to unknown users list(DB).'''
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
-        'insert into table USERS_DB.UNKNOWN_USERS'+
-        'values((0), (1), (2), (4));'.format(user.id, user.nickname,
-                                             user.name, user.second_name,
-                                             datetime.now())
-      ) # TODO: check for errors
+        'INSERT INTO users (id, first_nm, last_nm, user_nm, known) '+
+        "VALUES ('{0}', '{1}', '{2}', '{3}', FALSE);".format(user.id,
+                                                             user.first_name,
+                                                             user.second_name,
+                                                             user.username)
+      )
 
 
   def AddToKnown(self, user):
@@ -52,19 +67,16 @@ class DBAgent:
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
-        'insert into table USERS_DB.KNOWN_USERS'+
-        'values((0), (1), (2), (4));'.format(user.id, user.nickname,
-                                             user.name, user.second_name,
-                                             datetime.now())
+        'UPDATE users '+
+        "SET known = TRUE "+
+        "WHERE id='{0}';".format(user.id)
       )
-    _EraseFromUnknown(user.user_id)
 
 
-  def _EraseFromUnknown(self, user_id):
-    '''Deletes user from db with unknown users who visited bot.'''
-    with sqlite3.connect('users.squlite') as conn:
-      cursor = conn.cursor()
-      cursor.execute(
-        'delete from USERS_DB.UNKNOWN_USERS'+
-        'where UNKNOWN_USERS.USER_ID = (0)'.format(user_id)
-      )
+  def _CreateAllDb(self):
+    '''Creates schema and tables'''
+    with open('create.sql') as script_file:
+      query_string = script_file.read()
+      with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
+        cursor = conn.cursor()
+        cursor.execute(query_string)

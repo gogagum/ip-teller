@@ -1,7 +1,7 @@
-from password_generator import PasswordGenerator
-from threading import Thread
 import logging
 
+from password_generator import PasswordGenerator
+from threading import Thread
 from time import sleep
 
 
@@ -23,14 +23,15 @@ class PasswdManager:
   def GetCurrPasswd(self):
     '''Password getter for password check.'''
     with open("passwd.txt", "r") as passwd_file:
-      return curr_passwd.read()
+      return passwd_file.read().rstrip()
+    logging.debug('Got password from file.')
 
 
   def RefreshPasswd(self):
     '''Refreshes password.'''
     with open("passwd.txt", "w") as passwd_file:
-      passwd_file.write(self.passwd_generator.generate())
-    logging.debug('PasswdManager.RefreshPasswd() finishes')
+      passwd_file.write(self.passwd_generator.generate()+'\n')
+    logging.debug('PasswdManager.RefreshPasswd() finishes.')
 
 
   def _UpdaterThread(self):
@@ -38,3 +39,4 @@ class PasswdManager:
     while True:
       self.RefreshPasswd()
       sleep(3600)
+      logging.debug('Updated password.')
