@@ -6,7 +6,7 @@ from telebot import apihelper
 
 from db_agent import DBAgent
 from passwd_manager import PasswdManager
-from bot_user import BotUser
+# from bot_user import BotUser
 
 
 def GetToken():
@@ -25,7 +25,6 @@ def main():
   logging.debug('main started')
   # apihelper.proxy = {'https':'socks5://188.226.207.248:5555'}
 
-  # TODO: My log messages and all other logged info should be separated.
   passwd_manager = PasswdManager()
   bot = TeleBot(GetToken())
   db_agent = DBAgent();
@@ -34,11 +33,11 @@ def main():
   @bot.message_handler(commands=['start'])
   def StartingMessage(message):
     '''Starting message handler.'''
-    user = BotUser(message.from_user)
+    #user = BotUser(message.from_user)
 
-    if db_agent.CheckIfKnown(user):
+    if db_agent.CheckIfKnown(message.from_user):
       bot.send_message(chat_id=message.chat_id,
-                       text="Hello, (0), ".format(user.NameToCall()) +
+                       text="Hello, (0), ".format(message.from_user.full_name) +
                             "you can get address writing /get.")
     else:
       bot.send_message(chat_id=message.chat.id,
@@ -61,8 +60,8 @@ def main():
   @bot.message_handler(commands=['get'])
   def GetQuery(message):
     '''Answers to users query.'''
-    user = BotUser(message.from_user)
-    if (db_agent.CheckIfKnown(user)):
+    # user = BotUser(message.from_user)
+    if (db_agent.CheckIfKnown(message.from_user)):
       bot.send_message(chat_id=message.chat.id,
                        text=str(socket.gethostbyname(socket.gethostname())))
     else:

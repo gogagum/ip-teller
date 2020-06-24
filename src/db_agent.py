@@ -17,7 +17,7 @@ class DBAgent:
       cursor = conn.cursor()
       cursor.execute('SELECT * '+
                      'FROM sqlite_master '+
-                     "WHERE type='table' AND name='USERS';")
+                     "WHERE type='table' AND name='users';")
       row = cursor.fetchone()
       return row != None
 
@@ -27,24 +27,30 @@ class DBAgent:
     if not self.CheckExistance():
       self._CreateAllDb()
       self.AddToUnknown(user)
+      logging.debug('Table does not exisit.')
       return False
     # Check if known
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
-      found_by_id = cursor.execute(
-        'SELECT id ' +
-        'FROM users ' +
-        'WHERE users.user_id={0} AND users.known=TRUE;'.format(user.id)
-      )
       # Update name & login
       cursor.execute(
-        'UPDATE USERS ' +
-        "SET users.first_name  = '{0}', ".format(user.first_name) +
-        "    users.second_name = '{0}', ".format(user.second_name) +
-        "    users.login       = '{0}', ".format(user.login) +
-        "WHERE users.user_id=(0);".format(user.id)
+        'UPDATE users ' +
+        "SET first_nm = '{0}', ".format(user.first_name) +
+        "    last_nm  = '{0}', ".format(user.last_name) +
+        "    user_nm  = '{0}'  ".format(user.username) +
+        "WHERE user_id=={0};".format(user.id)
       )
-    if len(found_by_id) == 0:
+      cursor.fetchone()
+      # Check if user exists
+      cursor.execute(
+        'SELECT user_id ' +
+        'FROM users ' +
+        'WHERE user_id=={0} AND known;'.format(user.id)
+      )
+      row = cursor.fetchone()
+
+    if row == None:
+      logging.debug('row == None in DBAgent.CheckIfKnown()')
       AddToUnknown(user)
       return False
     return True
@@ -54,22 +60,24 @@ class DBAgent:
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
-        'INSERT INTO users (id, first_nm, last_nm, user_nm, known) '+
+        'INSERT INTO users (user_id, first_nm, last_nm, user_nm, known) '+
         "VALUES ('{0}', '{1}', '{2}', '{3}', FALSE);".format(user.id,
                                                              user.first_name,
-                                                             user.second_name,
+                                                             user.last_name,
                                                              user.username)
       )
 
 
   def AddToKnown(self, user):
     '''Adds user to known users list(DB).'''
+    if not self.CheckExistance():
+      self._CreateAllDb()
     with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
       cursor = conn.cursor()
       cursor.execute(
         'UPDATE users '+
         "SET known = TRUE "+
-        "WHERE id='{0}';".format(user.id)
+        "WHERE user_id='{0}';".format(user.id)
       )
 
 
