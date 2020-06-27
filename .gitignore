@@ -1,6 +1,6 @@
 token.txt
 passwd.txt
 src/__pycache__/*
-log/*
+log/debug.log
 db/users.sqlite
 

@@ -60,7 +60,7 @@ def GetQuery(message):
             bot.send_message(chat_id=message.chat.id, text=data["ip"])
     else:
         bot.send_message(chat_id=message.chat.id,
-                         text="I don't unsedstand.")
+                         text="I don't understand.")
 
 def _CheckPasswd(message):
     '''Checks password from message.'''
