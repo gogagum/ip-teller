@@ -59,7 +59,7 @@ class DBAgent:
         with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
             cursor.execute(
-              'INSERT INTO users ' +
+              'INSERT OR IGNORE INTO users ' +
               '(user_id, first_nm, last_nm, user_nm, known) ' +
               "VALUES ('{0}', '{1}', '{2}', '{3}', FALSE);".format(
                 user.id,
