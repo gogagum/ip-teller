@@ -31,8 +31,8 @@ def StartingMessage(message):
     '''Starting message handler.'''
     if db_agent.CheckIfKnown(message.from_user):
         bot.send_message(
-            chat_id=message.chat_id,
-            text="Hello, (0), ".format(message.from_user.full_name) +
+            chat_id=message.chat.id,
+            text="Hello, {0}, ".format(message.from_user.first_name) +
             "you can get address writing /get."
         )
     else:
@@ -42,8 +42,7 @@ def StartingMessage(message):
 @bot.message_handler(commands=['help'])
 def HelpMessage(message):
     '''Prints help information.'''
-    user = BotUser(message.from_user)
-    if (db_agent.CheckIfKnown(user)):
+    if (db_agent.CheckIfKnown(message.from_user)):
         bot.send_message(chat_id=message.chat.id,
                          text="Print /get to get ip address.")
     else:
