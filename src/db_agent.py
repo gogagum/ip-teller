@@ -73,6 +73,7 @@ class DBAgent:
         '''Adds user to known users list(DB).'''
         if not self.CheckExistance():
             self._CreateAllDb()
+            self.AddToUnknown(user)
         with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
             cursor.execute(

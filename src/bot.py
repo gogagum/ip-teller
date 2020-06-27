@@ -65,11 +65,10 @@ def GetQuery(message):
 
 def _CheckPasswd(message):
     '''Checks password from message.'''
-    user = BotUser(message.from_user)
     if (message.text == passwd_manager.GetCurrPasswd()):
-        db_agent.AddToKnown(user)
+        db_agent.AddToKnown(message.from_user)
         bot.send_message(chat_id=message.chat.id,
-                         text="Welcome, {0}".format(user.NameToCall()))
+                         text="Welcome, {0}".format(message.from_user.first_name))
     else:
         bot.send_message(chat_id=message.chat.id,
                          text="Are you hungri?")
