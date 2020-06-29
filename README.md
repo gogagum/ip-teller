@@ -1,5 +1,7 @@
+[README на русском](README_RU.md)
+
 # ip-teller
- 
+
 This app is telegram bot which can send you a message with current ip-address of
  host it runs on. There is also function of authorization, so admin can choose
  who can use this bot.
@@ -27,7 +29,7 @@ The app is written in python3. In case of you want to use this app for your
 
 ## How to use
 
-For now I recommend to use tool which is called 
+For now I recommend to use tool which is called
  [screen](https://linux.die.net/man/1/screen) (`man 1 screen`). I prefer
  starting this app by typing a command:
 
@@ -49,3 +51,4 @@ When a message `/register` is sent to the bot it asks for a password,
 
 I am sure that it crashes when internet connection fails and it is not
  the only problem for now. It is not usable yet, as it is first version.
+ The reason of publication of this version is to show idea and first results.
