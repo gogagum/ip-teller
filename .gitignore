@@ -1,0 +1,6 @@
+token.txt
+passwd.txt
+src/__pycache__/*
+log/debug.log
+db/users.sqlite
+

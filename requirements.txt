@@ -1,0 +1,2 @@
+pyTelegramBotAPI==3.7.1
+random-password-generator==2.1.0
