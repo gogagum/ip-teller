@@ -55,9 +55,9 @@ def GetQuery(message):
     '''Answers to users query.'''
     if (db_agent.CheckIfKnown(message.from_user)):
         # TODO: Check if it is stable enough
-        with urllib.request.urlopen("http://ip.jsontest.com/") as url:
-            data = json.loads(url.read())
-            bot.send_message(chat_id=message.chat.id, text=data["ip"])
+        with urllib.request.urlopen("https://ifconfig.me/all.json") as url:
+            data = json.loads(url.read().decode('utf-8'))
+            bot.send_message(chat_id=message.chat.id, text=data["ip_addr"])
     else:
         bot.send_message(chat_id=message.chat.id,
                          text="I don't understand.")
