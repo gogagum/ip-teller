@@ -9,7 +9,7 @@ class DBAgent:
 
     def __init__(self):
         '''Class constructor'''
-        self.db_path = './db/'
+        self.db_path = '../db/'
 
     def CheckExistance(self):
         '''Checks if table exists.'''
