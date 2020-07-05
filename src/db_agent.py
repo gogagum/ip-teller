@@ -1,6 +1,5 @@
 import sqlite3
 import logging
-import os
 
 from datetime import datetime
 import logging
@@ -15,19 +14,14 @@ class DBAgent:
     def CheckExistance(self):
         '''Checks if table exists.'''
         logging.debug("DBAgent.CheckExistance()")
-        try:
-            conn = sqlite3.connect(self.db_path + 'users.sqlite')
+        row = None
+        with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT * ' +
                            'FROM sqlite_master ' +
                            "WHERE type='table' AND name='users';")
             row = cursor.fetchone()
-            return row is not None
-        except sqlite3.OperationalError:
-            logging.debug("Create ./db path.")
-            os.mkdir("db")
-            conn = sqlite3.connect(self.db_path + 'users.sqlite')
-            return False
+        return row is not None
 
     def CheckIfKnown(self, user):
         '''Checks if id is added to USERS.KNOWN.'''
@@ -55,7 +49,6 @@ class DBAgent:
               'WHERE user_id=={0} AND known;'.format(user.id)
             )
             row = cursor.fetchone()
-
         if row is None:
             logging.debug('row == None in DBAgent.CheckIfKnown()')
             self.AddToUnknown(user)
