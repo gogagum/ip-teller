@@ -3,4 +3,7 @@ passwd.txt
 src/__pycache__/*
 log/debug.log
 db/users.sqlite
-
+test_env/
+ip_teller.egg-info/
+dist/
+build/

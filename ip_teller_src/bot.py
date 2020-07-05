@@ -5,8 +5,8 @@ import urllib
 from telebot import TeleBot
 from telebot import apihelper
 
-from src.db_agent import DBAgent
-from src.passwd_manager import PasswdManager
+from ip_teller_src.db_agent import DBAgent
+from ip_teller_src.passwd_manager import PasswdManager
 
 
 def GetToken():
