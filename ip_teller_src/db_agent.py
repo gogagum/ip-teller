@@ -7,9 +7,9 @@ import logging
 
 class DBAgent:
 
-    def __init__(self):
+    def __init__(self, path):
         '''Class constructor'''
-        self.db_path = '../db/'
+        self.db_path = path
 
     def CheckExistance(self):
         '''Checks if table exists.'''
@@ -85,8 +85,14 @@ class DBAgent:
 
     def _CreateAllDb(self):
         '''Creates schema and tables'''
-        with open('src/create.sql') as script_file:
-            query_string = script_file.read()
-            with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
-                cursor = conn.cursor()
-                cursor.execute(query_string)
+        with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+              "CREATE TABLE IF NOT EXISTS users( " +
+              "user_id  INTEGER PRIMARY KEY, " +
+              "first_nm VARCHAR(50), " +
+              "last_nm  VARCHAR(50), " +
+              "user_nm  VARCHAR(50), " +
+              "known    BOOLEAN " +
+              ");"
+            )

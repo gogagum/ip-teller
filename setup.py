@@ -1,7 +1,10 @@
 import ip_teller_src
 
+from ip_teller_src.directory_manager import DirectoryManager
 from setuptools import setup, find_packages
 from os.path import join, dirname
+
+directory_manager = DirectoryManager()
 
 setup(
     version=ip_teller_src.__version__,

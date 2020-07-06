@@ -7,8 +7,9 @@ from time import sleep
 
 class PasswdManager:
 
-    def __init__(self):
+    def __init__(self, path):
         '''Class constructor.'''
+        self.curr_passwd_path = path
         self.passwd_len = 10
         self.passwd_generator = PasswordGenerator()
         self.passwd_generator.minlen = self.passwd_len
@@ -21,13 +22,13 @@ class PasswdManager:
 
     def GetCurrPasswd(self):
         '''Password getter for password check.'''
-        with open("passwd.txt", "r") as passwd_file:
+        with open(self.curr_passwd_path + "passwd.txt", "r") as passwd_file:
             return passwd_file.read().rstrip()
         logging.debug('Got password from file.')
 
     def RefreshPasswd(self):
         '''Refreshes password.'''
-        with open("passwd.txt", "w") as passwd_file:
+        with open(self.curr_passwd_path + "passwd.txt", "w") as passwd_file:
             passwd_file.write(self.passwd_generator.generate() + '\n')
         logging.debug('PasswdManager.RefreshPasswd() finishes.')
 
