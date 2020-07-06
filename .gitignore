@@ -7,3 +7,4 @@ test_env/
 ip_teller.egg-info/
 dist/
 build/
+*.pyc
