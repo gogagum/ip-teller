@@ -2,6 +2,7 @@ import sqlite3
 import logging
 
 from datetime import datetime
+import logging
 
 
 class DBAgent:
@@ -10,22 +11,23 @@ class DBAgent:
         '''Class constructor'''
         self.db_path = './db/'
 
-    def CheckExistance(self):
+    def check_existance(self):
         '''Checks if table exists.'''
-        logging.debug("DBAgent.CheckExistance()")
+        logging.debug("DBAgent.check_existance()")
+        row = None
         with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
             cursor.execute('SELECT * ' +
                            'FROM sqlite_master ' +
                            "WHERE type='table' AND name='users';")
             row = cursor.fetchone()
-            return row is not None
+        return row is not None
 
-    def CheckIfKnown(self, user):
+    def check_if_known(self, user):
         '''Checks if id is added to USERS.KNOWN.'''
-        if not self.CheckExistance():
-            self._CreateAllDb()
-            self.AddToUnknown(user)
+        if not self.check_existance():
+            self._create_all_db()
+            self.add_to_unknown(user)
             logging.debug('Table does not exisit.')
             return False
         # Check if known
@@ -47,14 +49,13 @@ class DBAgent:
               'WHERE user_id=={0} AND known;'.format(user.id)
             )
             row = cursor.fetchone()
-
         if row is None:
-            logging.debug('row == None in DBAgent.CheckIfKnown()')
-            self.AddToUnknown(user)
+            logging.debug('row == None in DBAgent.check_if_known()')
+            self.add_to_unknown(user)
             return False
         return True
 
-    def AddToUnknown(self, user):
+    def add_to_unknown(self, user):
         '''Adds unknown user to unknown users list(DB).'''
         with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
@@ -69,11 +70,11 @@ class DBAgent:
               )
             )
 
-    def AddToKnown(self, user):
+    def add_to_known(self, user):
         '''Adds user to known users list(DB).'''
-        if not self.CheckExistance():
-            self._CreateAllDb()
-            self.AddToUnknown(user)
+        if not self.check_existance():
+            self._create_all_db()
+            self.add_to_unknown(user)
         with sqlite3.connect(self.db_path + 'users.sqlite') as conn:
             cursor = conn.cursor()
             cursor.execute(
@@ -82,7 +83,7 @@ class DBAgent:
               "WHERE user_id='{0}';".format(user.id)
             )
 
-    def _CreateAllDb(self):
+    def _create_db(self):
         '''Creates schema and tables'''
         with open('src/create.sql') as script_file:
             query_string = script_file.read()
