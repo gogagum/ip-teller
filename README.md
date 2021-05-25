@@ -41,6 +41,8 @@ For now I recommend to use tool which is called
 After starting app using `screen`, you can easily logout and bot will
  continue working.
 
+There is also a script `run.sh`  prepared, which you can use to start app.
+
 When a message `/register` is sent to the bot it asks for a password,
  which you can get by typing:
 ```
