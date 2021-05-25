@@ -14,26 +14,26 @@ class PasswdManager:
         self.passwd_generator.minlen = self.passwd_len
         self.passwd_generator.maxlen = self.passwd_len
         self.updater_thread = Thread(name='updater_thread',
-                                     target=self._UpdaterThread,
+                                     target=self._updater_thread,
                                      daemon=True)
         self.updater_thread.start()
         logging.debug('PasswdManager.__init__() finishes')
 
-    def GetCurrPasswd(self):
+    def get_curr_passwd(self):
         '''Password getter for password check.'''
         with open("passwd.txt", "r") as passwd_file:
             return passwd_file.read().rstrip()
         logging.debug('Got password from file.')
 
-    def RefreshPasswd(self):
+    def refresh_passwd(self):
         '''Refreshes password.'''
         with open("passwd.txt", "w") as passwd_file:
             passwd_file.write(self.passwd_generator.generate() + '\n')
         logging.debug('PasswdManager.RefreshPasswd() finishes.')
 
-    def _UpdaterThread(self):
+    def _updater_thread(self, period=3600):
         '''Thread function'''
         while True:
-            self.RefreshPasswd()
-            sleep(3600)
+            self.refresh_passwd()
+            sleep(preiod)
             logging.debug('Updated password.')

@@ -5,7 +5,8 @@ if __name__ == "__main__":
     while True:
         try:
             bot.polling(timeout=200)
-        except Exception as err:
+        except Exception as e:
             # In case of internet error try starting again
-            logging.debug(err)
+            logging.debug(e)
+            print(e)
             time.sleep(5)
