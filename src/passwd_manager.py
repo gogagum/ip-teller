@@ -35,5 +35,5 @@ class PasswdManager:
         '''Thread function'''
         while True:
             self.refresh_passwd()
-            sleep(preiod)
+            sleep(period)
             logging.debug('Updated password.')

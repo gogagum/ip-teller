@@ -2,8 +2,6 @@ import sqlite3
 import logging
 
 from datetime import datetime
-import logging
-
 
 class DBAgent:
 
