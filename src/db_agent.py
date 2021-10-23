@@ -22,7 +22,7 @@ class DBAgent:
         return row is not None
 
     def check_if_known(self, user):
-        '''Checks if id is added to USERS.KNOWN.'''
+        
         if not self.check_existance():
             self._create_all_db()
             self.add_to_unknown(user)

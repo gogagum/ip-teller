@@ -23,30 +23,17 @@ class Bot:
         self.telebot = TeleBot(self._getToken())
         self.db_agent = DBAgent()
 
-        self.telebot.register_message_handler(self.get_starting_message_handler(), 
-	                                      commands=['start'])
+        self.telebot.register_message_handler(
+	    lambda message: self.starting_message(message), commands=['start'])
 	
-        self.telebot.register_message_handler(self.get_help_query_handler(),
-                                              commands=['help'])
+        self.telebot.register_message_handler(
+	    lambda message: self.help_message(message), commands=['help'])
 					  
-        self.telebot.register_message_handler(self.get_get_query_handler(),
-                                              commands=['get'])
+        self.telebot.register_message_handler(
+	    lambda message: self.get_query(message), commands=['get'])
 
-        self.telebot.register_message_handler(self.get_login_query_handler(),
-                                              commands=['register'])				  
-
-    def get_starting_message_handler(self):
-    	return lambda message: self.starting_message(message)
-
-    def get_help_query_handler(self):
-    	return lambda message: self.help_message(message)
-
-    def get_get_query_handler(self):
-        return lambda message: self.get_query(message)
-
-    def get_login_query_handler(self):
-        return lambda message: self.login(message)
-
+        self.telebot.register_message_handler(
+	    lambda message: self.get_login(message), commands=['register'])				  
 
     def starting_message(self, message):
         '''Starting message handler.'''
@@ -112,6 +99,3 @@ class Bot:
         msg = self.telebot.send_message(chat_id=message.chat.id,
                                         text="Print password, if you know it.")
         self.telebot.register_next_step_handler(msg, _CheckPasswd)
-
-    def infinity_polling(self):
-        self.telebot.infinity_polling()
